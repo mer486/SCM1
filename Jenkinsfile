@@ -10,8 +10,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from Git repository
-                git credentialsId: 'github-credentials', url: 'https://github.com/mer486/SCM1.git'
+                // Checkout the code from Git repository with the correct branch
+                git credentialsId: 'github-credentials', 
+                    url: 'https://github.com/mer486/SCM1.git', 
+                    branch: 'main'  // Make sure to specify the correct branch here
             }
         }
 
