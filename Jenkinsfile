@@ -1,44 +1,59 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKER_IMAGE = 'scm1-api'
-        DOCKER_COMPOSE_PROJECT = 'scm1'
+        // Set environment variables if necessary
+        DOCKER_IMAGE_NAME = 'your-docker-image-name'
+        DOCKER_REGISTRY = 'your-docker-registry'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                // Checkout the code from Git repository
+                git credentialsId: 'github-credentials', url: 'https://github.com/mer486/SCM1.git'
             }
         }
-        
+
         stage('Build') {
             steps {
-                sh 'dotnet restore SCM1.sln'
-                sh 'dotnet build SCM1.sln -c Release'
+                script {
+                    // Run the build steps here
+                    echo 'Building the project...'
+
+                    // Example: Running a batch command on Windows
+                    bat 'echo Building project on Windows'
+                }
             }
         }
-        
+
         stage('Docker Build') {
             steps {
-                sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
+                script {
+                    // Build Docker image (make sure Docker is installed and configured on Windows)
+                    echo 'Building Docker image...'
+                    bat 'docker build -t %DOCKER_IMAGE_NAME% .'
+                }
             }
         }
-        
+
         stage('Deploy to Staging') {
             steps {
-                sh 'docker-compose -p ${DOCKER_COMPOSE_PROJECT} up -d --build'
+                script {
+                    // Deploy to staging (you can add Windows-specific deployment commands)
+                    echo 'Deploying to staging...'
+                    bat 'docker run -d %DOCKER_IMAGE_NAME%'
+                }
             }
         }
     }
-    
+
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Pipeline executed successfully!'
         }
         failure {
-            echo 'Deployment failed.'
+            echo 'Pipeline failed!'
         }
     }
 }
