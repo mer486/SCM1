@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}  # Reference the password from the .env file
+      ACCEPT_EULA: "Y"  # Accepts the SQL Server EULA
+    ports:
+      - "1445:1433"  # Changed host port from 1444 to 1445
+    volumes:
+      - sqlserver-data:/var/opt/mssql  # Persist SQL Server data across container restarts
+
+  api:
+    build: .  # Dockerfile should be in the current directory
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=AdventureWorks;User Id=sa;Password=${SA_PASSWORD};"  # Use the password from .env
+    ports:
+      - "8082:80"  # Changed the host port from 8081 to 8082
+      # Exposes the API on port 8082 on your host machine instead of 8081
+
+volumes:
+  sqlserver-data:  # This will create a named volume to persist SQL Server data
